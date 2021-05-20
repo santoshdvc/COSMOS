@@ -1,6 +1,7 @@
 package com.masterwarchief.thefive;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.inputmethodservice.Keyboard;
 import android.os.Build;
@@ -12,16 +13,27 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 
 public class FloatingService extends Service {
     private WindowManager mWindowManager;
     private View mFloatingView;
-
+    TextView comm_click;
+    CardView perf_metric;
+    LinearLayout card_perf, card_comm;
     public FloatingService() {
     }
 
@@ -73,6 +85,33 @@ public class FloatingService extends Service {
                 expandedView.setVisibility(View.GONE);
             }
         });
+        card_perf=(LinearLayout)mFloatingView.findViewById(R.id.perf_drop);
+        perf_metric= (CardView) mFloatingView.findViewById(R.id.perf_card);
+        perf_metric.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(card_perf.getVisibility()==View.VISIBLE){
+                    card_perf.setVisibility(View.GONE);
+                }
+                else {
+                    card_perf.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        comm_click=(TextView)mFloatingView.findViewById(R.id.textV);
+        card_comm=(LinearLayout)mFloatingView.findViewById(R.id.comm_drop);
+        comm_click.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(card_comm.getVisibility()==View.VISIBLE){
+                    card_comm.setVisibility(View.GONE);
+                }
+                else{
+                    card_comm.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         QuestionModel[] qus= new QuestionModel[]{
                 new QuestionModel("Can I have a standwich?","I need a sandwich not standwich."),
                 new QuestionModel("Can I go to play?","I need to play cricket."),
@@ -89,12 +128,10 @@ public class FloatingService extends Service {
                 new QuestionModel("Can I have a standwich?","I need a sandwich not standwich.")
         };
         RecyclerView recyclerView;
-        recyclerView=mFloatingView.findViewById(R.id.float_recycler);
+        recyclerView=mFloatingView.findViewById(R.id.float_comm);
         QuestionAdapter questionAdapter= new QuestionAdapter(qus);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(questionAdapter);
-
-
 
         //Drag and move floating view using user's touch action.
         mFloatingView.findViewById(R.id.root_container).setOnTouchListener(new View.OnTouchListener() {
@@ -168,4 +205,5 @@ public class FloatingService extends Service {
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
     }
+
 }

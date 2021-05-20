@@ -1,21 +1,32 @@
 package com.masterwarchief.thefive;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
-        import android.net.Uri;
+import android.graphics.Color;
+import android.net.Uri;
         import android.os.Build;
         import android.os.Bundle;
         import android.provider.Settings;
         import android.view.View;
         import android.widget.Toast;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
 
 public class MainActivity extends AppCompatActivity {
     private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
-
+    TabLayout tabLayout;
+    ViewPager2 viewPager2;
+    String titles[];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +47,17 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(questionAdapter);
 
         */
+        titles=new String[]{"Home", "Community", "Report bugs"};
         //Check if the application has draw over other apps permission or not?
         //This permission is by default available for API<23. But for API > 23
         //you have to ask for the permission in runtime.
+        tabLayout=(TabLayout)findViewById(R.id.main_tab);
+        viewPager2=findViewById(R.id.main_pager);
+        viewPager2.setNestedScrollingEnabled(true);
+        viewPager2.setAdapter(new ViewPagerFragmentAdapter(this));
+        new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(titles[position])).attach();
+        tabLayout.setBackgroundColor(Color.WHITE);
+        viewPager2.setCurrentItem(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
 
 
@@ -80,6 +99,32 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    class ViewPagerFragmentAdapter extends FragmentStateAdapter {
+
+        public ViewPagerFragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
+            super(fragmentActivity);
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            switch (position) {
+                case 0:
+                    return new HomeFragment();
+                case 1:
+                    return new CommunityFragment();
+                case 2:
+                    return new ReportFragment();
+            }
+            return null;
+        }
+
+        @Override
+        public int getItemCount() {
+            return 3;
         }
     }
 }
