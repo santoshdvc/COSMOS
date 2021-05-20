@@ -83,6 +83,17 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getActivity() != null && getActivity().getIntent()!=null) {
+            // do whatever needed
+            if (DataManager.getInstance().hasPermission(getContext())) {
+                mSwipe.setEnabled(true);
+                mSort.setVisibility(View.VISIBLE);
+                mSwitch.setVisibility(View.GONE);
+                initSpinner();
+                initSort();
+                process();
+            }
+        }
 
     }
 
@@ -214,8 +225,7 @@ public class HomeFragment extends Fragment {
             mSwitch.setChecked(false);
         }
     }
-
-    @Override
+    /*
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (DataManager.getInstance().hasPermission(getContext())) {
@@ -227,6 +237,7 @@ public class HomeFragment extends Fragment {
             process();
         }
     }
+    */
 
     private void process() {
         if (DataManager.getInstance().hasPermission(getContext().getApplicationContext())) {

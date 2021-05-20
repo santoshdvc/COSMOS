@@ -4,7 +4,12 @@
     package="com.masterwarchief.thefive">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,6 +27,15 @@
             </intent-filter>
         </activity>
         <service android:name="com.masterwarchief.thefive.FloatingService" />
+        <service android:name=".service.AppService" />
+        <service android:name=".service.AlarmService" />
+        <receiver
+            android:name=".receiver.AlarmReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="ALARM_RECEIVER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
