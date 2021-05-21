@@ -1,6 +1,7 @@
 package com.masterwarchief.thefive;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.inputmethodservice.Keyboard;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -38,7 +40,7 @@ public class FloatingService extends Service {
     private WindowManager mWindowManager;
     private View mFloatingView;
     TextView comm_click;
-    CardView perf_metric, report_btn;
+    CardView perf_metric, report_btn, microphone;
     LinearLayout card_perf, card_comm;
     Button stop_button;
     private FirestoreRecyclerAdapter<QuestionModel, FloatingService.QuestionViewHolder> adapter;
@@ -85,7 +87,20 @@ public class FloatingService extends Service {
                 stopSelf();
             }
         });
-        //The root element of the collapsed view layout
+        microphone=mFloatingView.findViewById(R.id.open_assitant);
+        microphone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PackageManager pm = getApplicationContext().getPackageManager();
+                Intent launchIntent = pm.getLaunchIntentForPackage("com.google.android.apps.googleassistant");
+                if (launchIntent != null) {
+                    getApplicationContext().startActivity(launchIntent);
+                } else {
+                    Toast.makeText(FloatingService.this, "No Assistant App found", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    //The root element of the collapsed view layout
         final View collapsedView = mFloatingView.findViewById(R.id.collapse_view);
         //The root element of the expanded view layout
         final View expandedView = mFloatingView.findViewById(R.id.expanded_container);
