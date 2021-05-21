@@ -19,4 +19,11 @@
     <string name="times">%1$s · %2$d times</string>
 
     <string name="wifi_data">WiFi:%1$s · Mobile:%2$s</string>
+    <string name="open_app_usage_setting">Open Apps with usage access settings</string>
+    <string name="last_time_used">"Last time used: "</string>
+    <string name="time_span">"Time span: "</string>
+    <string name="explanation_access_to_appusage_is_not_enabled">Failed to retrieve app usage
+        statistics. You may need to enable access
+        for this app through Settings > Security > Apps with usage access
+    </string>
 </resources>
