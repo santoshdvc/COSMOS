@@ -2,6 +2,7 @@ package com.masterwarchief.thefive;
 
 public class AnswerModel {
     private String answer, user_id;
+    public AnswerModel(){}
     public AnswerModel(String answer, String user_id)
     {
         this.answer=answer;

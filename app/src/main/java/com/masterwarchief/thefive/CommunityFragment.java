@@ -15,12 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,6 +35,7 @@ import java.util.Map;
 public class CommunityFragment extends Fragment {
     View parent;
     CardView ask_qus;
+    private FirestoreRecyclerAdapter<QuestionModel, QuestionViewHolder> adapter;
     public CommunityFragment() {
         // Required empty public constructor
     }
@@ -52,9 +57,6 @@ public class CommunityFragment extends Fragment {
         // Inflate the layout for this fragment
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         parent=inflater.inflate(R.layout.fragment_community, container, false);
-        QuestionModel[] qus= new QuestionModel[]{
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich.",new AnswerModel[]{new AnswerModel("Hello", "jssadfafssg")}),
-        };
         ask_qus=parent.findViewById(R.id.ask_qus);
         ask_qus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,9 +110,60 @@ public class CommunityFragment extends Fragment {
         });
         RecyclerView recyclerView;
         recyclerView=parent.findViewById(R.id.home_recycler);
-        QuestionAdapter questionAdapter= new QuestionAdapter(qus);
+        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+        Query query = rootRef.collection("questions");
+        FirestoreRecyclerOptions<QuestionModel> options = new FirestoreRecyclerOptions.Builder<QuestionModel>()
+                .setQuery(query, QuestionModel.class)
+                .build();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(questionAdapter);
+        adapter = new FirestoreRecyclerAdapter<QuestionModel, QuestionViewHolder>(options) {
+            @NonNull
+            @Override
+            public QuestionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.question_element, parent, false);
+                return new QuestionViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull QuestionViewHolder holder, int position, @NonNull QuestionModel model) {
+                holder.setQuestion(model.getQuestion());
+                holder.setDescription(model.getDescription());
+            }
+
+        };
+        recyclerView.setAdapter(adapter);
         return parent;
+    }
+
+    private class QuestionViewHolder extends RecyclerView.ViewHolder {
+        private View view;
+
+        QuestionViewHolder(View itemView) {
+            super(itemView);
+            view = itemView;
+        }
+
+        void setQuestion(String qus_title) {
+            TextView textView = view.findViewById(R.id.question_text);
+            textView.setText(qus_title);
+        }
+        void setDescription(String qus_desc){
+            TextView textView = view.findViewById(R.id.question_desc_box);
+            textView.setText(qus_desc);
+        }
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (adapter != null) {
+            adapter.stopListening();
+        }
     }
 }
