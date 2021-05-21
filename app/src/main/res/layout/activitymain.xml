@@ -39,14 +39,6 @@
                 android:text="Report Bugs" />
         </com.google.android.material.tabs.TabLayout>
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="80dp"
-            android:layout_height="45dp"
-            android:layout_weight="1"
-            android:background="@android:drawable/ic_lock_idle_low_battery"
-            android:padding="0dp"
-            app:cornerRadius="40dp" />
     </LinearLayout>
 
     <androidx.viewpager2.widget.ViewPager2

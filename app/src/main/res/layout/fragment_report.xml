@@ -19,12 +19,12 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/add_bug"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
             android:layout_marginBottom="32dp"
             android:elevation="10dp"
             app:cardBackgroundColor="#F44336"
-            app:cardCornerRadius="15dp"
+            app:cardCornerRadius="25dp"
             app:cardElevation="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,6 +37,7 @@
                 android:layout_gravity="center"
                 android:text="Report a bug"
                 android:textColor="@color/white"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>

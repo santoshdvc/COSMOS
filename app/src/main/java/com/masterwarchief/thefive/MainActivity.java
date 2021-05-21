@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activitymain);
-
         /*
         RecyclerView recyclerView= findViewById(R.id.try_box);
         QuestionModel[] qus= new QuestionModel[]{
@@ -81,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(titles[position])).attach();
         tabLayout.setBackgroundColor(Color.WHITE);
         viewPager2.setCurrentItem(0);
+        Bundle extras = getIntent().getExtras();
+        int frag;
+
+        if (extras != null) {
+            frag = extras.getInt("frag");
+            viewPager2.setCurrentItem(frag);
+        }
 
     }
 

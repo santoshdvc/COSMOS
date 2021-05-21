@@ -19,12 +19,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +46,7 @@ public class ReportFragment extends Fragment {
     View parent;
     CardView bug_report;
     String appName;
+    private FirestoreRecyclerAdapter<ReportModel, ReportFragment.ReportViewHolder> adapter;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
@@ -145,7 +150,66 @@ public class ReportFragment extends Fragment {
         });
         RecyclerView bug_recycler= parent.findViewById(R.id.bug_report_recycler);
         bug_recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+        Query query = rootRef.collection("bug_reports").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("bugs").orderBy("uid");
+        FirestoreRecyclerOptions<ReportModel> options = new FirestoreRecyclerOptions.Builder<ReportModel>()
+                .setQuery(query, ReportModel.class)
+                .build();
+        bug_recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new FirestoreRecyclerAdapter<ReportModel, ReportViewHolder>(options) {
+            @NonNull
+            @Override
+            public ReportFragment.ReportViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.repport_element, parent, false);
+                return new ReportFragment.ReportViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull ReportFragment.ReportViewHolder holder, int position, @NonNull ReportModel model) {
+                holder.setAppName(model.getAppName());
+                holder.setBug_desc(model.getBug_desc());
+                holder.setBug_title(model.getBug_title());
+            }
+
+        };
+        bug_recycler.setAdapter(adapter);
 
         return parent;
+    }
+
+    private class ReportViewHolder extends RecyclerView.ViewHolder {
+        private View view;
+
+        ReportViewHolder(View itemView) {
+            super(itemView);
+            view = itemView;
+        }
+
+        void setBug_title(String bug_title) {
+            TextView textView = view.findViewById(R.id.bug_title);
+            textView.setText(bug_title);
+        }
+        void setBug_desc(String bug_desc){
+            TextView textView = view.findViewById(R.id.bug_desc);
+            textView.setText(bug_desc);
+        }
+        void setAppName(String appName){
+            TextView textView = view.findViewById(R.id.app_name);
+            textView.setText(appName);
+        }
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (adapter != null) {
+            adapter.stopListening();
+        }
     }
 }

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -111,7 +112,7 @@ public class CommunityFragment extends Fragment {
         RecyclerView recyclerView;
         recyclerView=parent.findViewById(R.id.home_recycler);
         FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-        Query query = rootRef.collection("questions");
+        Query query = rootRef.collection("questions").orderBy("qus_title");
         FirestoreRecyclerOptions<QuestionModel> options = new FirestoreRecyclerOptions.Builder<QuestionModel>()
                 .setQuery(query, QuestionModel.class)
                 .build();
@@ -126,8 +127,8 @@ public class CommunityFragment extends Fragment {
 
             @Override
             protected void onBindViewHolder(@NonNull QuestionViewHolder holder, int position, @NonNull QuestionModel model) {
-                holder.setQuestion(model.getQuestion());
-                holder.setDescription(model.getDescription());
+                holder.setQuestion(model.getQus_title());
+                holder.setDescription(model.getQus_desc());
             }
 
         };

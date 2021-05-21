@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,17 +26,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 
 public class FloatingService extends Service {
     private WindowManager mWindowManager;
     private View mFloatingView;
     TextView comm_click;
-    CardView perf_metric;
+    CardView perf_metric, report_btn;
     LinearLayout card_perf, card_comm;
     Button stop_button;
+    private FirestoreRecyclerAdapter<QuestionModel, FloatingService.QuestionViewHolder> adapter;
     public FloatingService() {
     }
 
@@ -75,6 +81,7 @@ public class FloatingService extends Service {
         stop_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                adapter.stopListening();
                 stopSelf();
             }
         });
@@ -91,6 +98,17 @@ public class FloatingService extends Service {
             public void onClick(View view) {
                 collapsedView.setVisibility(View.VISIBLE);
                 expandedView.setVisibility(View.GONE);
+            }
+        });
+        report_btn=mFloatingView.findViewById(R.id.report_btn);
+        report_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent(getApplicationContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("frag",2);
+                expandedView.setVisibility(View.GONE);
+                startActivity(intent);
             }
         });
         card_perf=(LinearLayout)mFloatingView.findViewById(R.id.perf_drop);
@@ -119,8 +137,32 @@ public class FloatingService extends Service {
                 }
             }
         });
+        //start_listener
+        RecyclerView recyclerView;
+        recyclerView=mFloatingView.findViewById(R.id.float_comm);
+        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+        Query query = rootRef.collection("questions").orderBy("qus_title").limitToLast(10);
+        FirestoreRecyclerOptions<QuestionModel> options = new FirestoreRecyclerOptions.Builder<QuestionModel>()
+                .setQuery(query, QuestionModel.class)
+                .build();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        adapter = new FirestoreRecyclerAdapter<QuestionModel, FloatingService.QuestionViewHolder>(options) {
+            @NonNull
+            @Override
+            public FloatingService.QuestionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.question_element, parent, false);
+                return new FloatingService.QuestionViewHolder(view);
+            }
 
+            @Override
+            protected void onBindViewHolder(@NonNull FloatingService.QuestionViewHolder holder, int position, @NonNull QuestionModel model) {
+                holder.setQuestion(model.getQus_title());
+                holder.setDescription(model.getQus_desc());
+            }
 
+        };
+        recyclerView.setAdapter(adapter);
+        adapter.startListening();
         //Drag and move floating view using user's touch action.
         mFloatingView.findViewById(R.id.root_container).setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
@@ -192,6 +234,23 @@ public class FloatingService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
-    }
 
+    }
+    private class QuestionViewHolder extends RecyclerView.ViewHolder {
+        private View view;
+
+        QuestionViewHolder(View itemView) {
+            super(itemView);
+            view = itemView;
+        }
+
+        void setQuestion(String qus_title) {
+            TextView textView = view.findViewById(R.id.question_text);
+            textView.setText(qus_title);
+        }
+        void setDescription(String qus_desc){
+            TextView textView = view.findViewById(R.id.question_desc_box);
+            textView.setText(qus_desc);
+        }
+    }
 }

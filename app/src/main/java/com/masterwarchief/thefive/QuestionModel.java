@@ -14,19 +14,19 @@ public class QuestionModel {
         this.answers=answers;
     }
 
-    public String getDescription() {
+    public String getQus_desc() {
         return qus_desc;
     }
 
-    public void setDescription(String description) {
+    public void setQus_desc(String description) {
         this.qus_desc = description;
     }
 
-    public void setQuestion(String question) {
+    public void setQus_title(String question) {
         this.qus_title = question;
     }
 
-    public String getQuestion() {
+    public String getQus_title() {
         return qus_title;
     }
 
