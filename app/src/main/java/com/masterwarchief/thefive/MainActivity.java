@@ -18,19 +18,29 @@ import android.net.Uri;
         import android.view.View;
         import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
     TabLayout tabLayout;
     ViewPager2 viewPager2;
     String titles[];
+    private FirebaseUser user;
+    private FirebaseAuth auth;
+    private static final int RC_SIGN_IN = 007;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activitymain);
+
         /*
         RecyclerView recyclerView= findViewById(R.id.try_box);
         QuestionModel[] qus= new QuestionModel[]{
@@ -47,6 +57,19 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(questionAdapter);
 
         */
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build());
+        auth=FirebaseAuth.getInstance();
+// Create and launch sign-in intent
+        if(auth.getCurrentUser()==null){
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .build(),
+                RC_SIGN_IN);
+        }
+
         titles=new String[]{"Home", "Community", "Report bugs"};
         //Check if the application has draw over other apps permission or not?
         //This permission is by default available for API<23. But for API > 23
@@ -58,49 +81,29 @@ public class MainActivity extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(titles[position])).attach();
         tabLayout.setBackgroundColor(Color.WHITE);
         viewPager2.setCurrentItem(0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
 
-
-            //If the draw over permission is not available open the settings screen
-            //to grant the permission.
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
-        } else {
-            initializeView();
-        }
     }
 
     /**
      * Set and initialize the view elements.
      */
-    private void initializeView() {
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startService(new Intent(MainActivity.this, FloatingService.class));
-                finish();
-            }
-        });
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CODE_DRAW_OVER_OTHER_APP_PERMISSION) {
-            //Check if the permission is granted or not.
-            if (resultCode == RESULT_OK) {
-                initializeView();
-            } else { //Permission is not available
-                Toast.makeText(this,
-                        "Draw over other app permission not available. Closing the application",
-                        Toast.LENGTH_SHORT).show();
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                // Successfully signed in
+                user = FirebaseAuth.getInstance().getCurrentUser();
+            } else {
                 finish();
             }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+
 
     class ViewPagerFragmentAdapter extends FragmentStateAdapter {
 

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ public class FloatingService extends Service {
     TextView comm_click;
     CardView perf_metric;
     LinearLayout card_perf, card_comm;
+    Button stop_button;
     public FloatingService() {
     }
 
@@ -69,7 +71,13 @@ public class FloatingService extends Service {
         //Add the view to the window
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mFloatingView, params);
-
+        stop_button=mFloatingView.findViewById(R.id.button2);
+        stop_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopSelf();
+            }
+        });
         //The root element of the collapsed view layout
         final View collapsedView = mFloatingView.findViewById(R.id.collapse_view);
         //The root element of the expanded view layout
@@ -112,26 +120,6 @@ public class FloatingService extends Service {
             }
         });
 
-        QuestionModel[] qus= new QuestionModel[]{
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich."),
-                new QuestionModel("Can I go to play?","I need to play cricket."),
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich."),
-                new QuestionModel("Can you turn on fan?","I am feeling very hot. The temperature is above 100F."),
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich."),
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich."),
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich."),
-                new QuestionModel("Can I go to play?","I need to play cricket."),
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich."),
-                new QuestionModel("Can I go to play?","I need to play cricket."),
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich."),
-                new QuestionModel("Can I go to play?","I need to play cricket."),
-                new QuestionModel("Can I have a standwich?","I need a sandwich not standwich.")
-        };
-        RecyclerView recyclerView;
-        recyclerView=mFloatingView.findViewById(R.id.float_comm);
-        QuestionAdapter questionAdapter= new QuestionAdapter(qus);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        recyclerView.setAdapter(questionAdapter);
 
         //Drag and move floating view using user's touch action.
         mFloatingView.findViewById(R.id.root_container).setOnTouchListener(new View.OnTouchListener() {

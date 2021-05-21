@@ -2,9 +2,11 @@ package com.masterwarchief.thefive;
 
 public class QuestionModel {
     private String question, description;
-    public QuestionModel(String question, String description){
+    private  AnswerModel[] answers;
+    public QuestionModel(String question, String description, AnswerModel[] answers){
         this.question=question;
         this.description=description;
+        this.answers=answers;
     }
 
     public String getDescription() {
@@ -21,5 +23,13 @@ public class QuestionModel {
 
     public String getQuestion() {
         return question;
+    }
+
+    public AnswerModel[] getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(AnswerModel[] answers) {
+        this.answers = answers;
     }
 }

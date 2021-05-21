@@ -1,11 +1,11 @@
 package com.masterwarchief.thefive;
 
 public class AnswerModel {
-    private String answer, question_id;
-    public AnswerModel(String answer, String question_id)
+    private String answer, user_id;
+    public AnswerModel(String answer, String user_id)
     {
         this.answer=answer;
-        this.question_id=question_id;
+        this.user_id=user_id;
     }
 
     public void setAnswer(String answer) {
@@ -16,11 +16,11 @@ public class AnswerModel {
         return answer;
     }
 
-    public String getQuestion_id() {
-        return question_id;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setQuestion_id(String question_id) {
-        this.question_id = question_id;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 }
