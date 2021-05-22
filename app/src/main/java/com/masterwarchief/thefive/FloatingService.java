@@ -41,7 +41,7 @@ public class FloatingService extends Service {
     private View mFloatingView;
     TextView comm_click;
     CardView perf_metric, report_btn, microphone;
-    LinearLayout card_perf, card_comm;
+    LinearLayout  card_comm;
     Button stop_button;
     private FirestoreRecyclerAdapter<QuestionModel, FloatingService.QuestionViewHolder> adapter;
     public FloatingService() {
@@ -126,17 +126,13 @@ public class FloatingService extends Service {
                 startActivity(intent);
             }
         });
-        card_perf=(LinearLayout)mFloatingView.findViewById(R.id.perf_drop);
         perf_metric= (CardView) mFloatingView.findViewById(R.id.perf_card);
         perf_metric.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(card_perf.getVisibility()==View.VISIBLE){
-                    card_perf.setVisibility(View.GONE);
-                }
-                else {
-                    card_perf.setVisibility(View.VISIBLE);
-                }
+                Intent intent= new Intent(getApplicationContext(),MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
         comm_click=(TextView)mFloatingView.findViewById(R.id.textV);

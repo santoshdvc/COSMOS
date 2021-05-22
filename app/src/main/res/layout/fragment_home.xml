@@ -60,7 +60,7 @@
             android:id="@+id/textView10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Total Screen On Time"
+            android:text="Total Screen On Time in Last 24 hours"
             android:textColor="@color/fui_bgGitHub" />
 
         <TextView
@@ -80,7 +80,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/usage_recycle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:elevation="11dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
